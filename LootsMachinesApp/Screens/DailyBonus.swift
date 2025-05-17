@@ -12,7 +12,10 @@ struct DailyBonus: View {
     ZStack {
       Color(hex: "1C0035").opacity(0.8)
         .ignoresSafeArea()
-      
+        .onTapGesture {
+          vm.showBonus = false
+        }
+       
       Image(.bonus)
         .resizableToFit()
         .hPadding()
@@ -25,22 +28,28 @@ struct DailyBonus: View {
         }
         .blendMode(.luminosity)
         .scaleEffect(startAnimation ? 2 : 1)
-        .animation(.easeIn(duration: 3),value: startAnimation)
+        .animation(.easeIn(duration: 3), value: startAnimation)
             
       Image(.mysteriousglow)
         .resizableToFill()
-        .clipped()
+     //   .clipped()
         .opacity(startAnimation ? 0.7 : 0)
         .blendMode(.screen)
         .blendMode(.luminosity)
-        .animation(.easeIn(duration: 1),value: startAnimation)
-
-      Text("TAP TO CONTINUE")
-        .lootsFont(size: 18, style: .killjoy, color: .white)
+        .animation(.easeIn(duration: 1), value: startAnimation)
+      Button {
+        vm.showBonus = false
+      } label: {
+        Text("TAP TO CONTINUE")
+          .lootsFont(size: 18, style: .killjoy, color: .white)
+          .tappableBg()
+      }
+    
         .yOffset(vm.h*0.35)
         .transparentIfNot(startAnimation)
         .animation(.easeIn(duration: 1).delay(0.7), value: startAnimation)
     }
+    .frame(vm.w, vm.h)
     .onAppear {
       startAnimation = true
     }

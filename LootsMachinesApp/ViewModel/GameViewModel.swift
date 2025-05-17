@@ -12,6 +12,7 @@ final class GameViewModel: ObservableObject {
   
   @Published var balance = 10000
   @Published var slots: [String] = []
+  @Published var showBonus = false
   
   // MARK: - Loading
   private var cancellables = Set<AnyCancellable>()

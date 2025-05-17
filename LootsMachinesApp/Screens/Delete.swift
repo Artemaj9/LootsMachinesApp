@@ -19,7 +19,7 @@ struct Delete: View {
               Button {
                 showDelete = false
               } label: {
-                Image(.backbtn)
+                Image(.bbtn)
                   .resizableToFit(height: 54)
               }
               

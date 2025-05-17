@@ -13,25 +13,8 @@ struct MainScreen: View {
         bg
         header
         createSlot
-        HStack {
-          VStack(alignment: .leading) {
-            Text("BROWSE YOUR")
-              .lootsFont(size: 21, style: .killjoy, color: .white)
-            Text("SLOTS")
-              .lootsFont(size: 27, style: .killjoy, color: .white)
-          }
-          
-          Spacer()
-          
-          Button {
-            nm.path.append(.history)
-          } label: {
-            Image(.seeallbtn)
-              .resizableToFit(height: 48)
-          }
-        }
-        .hPadding()
-        .yOffset(vm.h*0.1)
+        browseSlots
+        dailyBonus
       }
       .addNavigationRoutes(path: $nm.path)
   }
@@ -69,7 +52,7 @@ struct MainScreen: View {
         }
         
         Button {
-          nm.path.append(.prize)
+          vm.showBonus = true
         } label: {
           Image(.prizebtn)
             .resizableToFit(height: 54)
@@ -94,6 +77,38 @@ struct MainScreen: View {
         .yOffset(20)
       }
       .yOffset(-vm.h*0.18)
+  }
+  
+  private var browseSlots: some View {
+    HStack {
+      VStack(alignment: .leading) {
+        Text("BROWSE YOUR")
+          .lootsFont(size: 21, style: .killjoy, color: .white)
+        Text("SLOTS")
+          .lootsFont(size: 27, style: .killjoy, color: .white)
+      }
+      
+      Spacer()
+      
+      Button {
+        nm.path.append(.history)
+      } label: {
+        Image(.seeallbtn)
+          .resizableToFit(height: 48)
+      }
+    }
+    .hPadding()
+    .yOffset(vm.h*0.1)
+  }
+  
+  private var dailyBonus: some View {
+    ZStack {
+      if vm.showBonus {
+        DailyBonus()
+      }
+    }
+    .transparentIfNot(vm.showBonus)
+    .animation(.easeInOut, value: vm.showBonus)
   }
 }
 
