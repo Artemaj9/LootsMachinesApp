@@ -290,6 +290,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LootsMachinesApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Loots Machines";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to let you upload custom images for your slot design. Your images will only be used for customization and stored locally on your device.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to let you upload custom images for your slot design. Your images will only be used for customization and stored locally on your device.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -326,6 +328,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LootsMachinesApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Loots Machines";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to let you upload custom images for your slot design. Your images will only be used for customization and stored locally on your device.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to let you upload custom images for your slot design. Your images will only be used for customization and stored locally on your device.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

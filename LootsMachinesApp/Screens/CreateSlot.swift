@@ -8,6 +8,11 @@ struct CreateSlot: View {
   @EnvironmentObject var nm: NavigationStateManager
   @EnvironmentObject var vm: GameViewModel
   @State private var startAnimation = false
+  @State private var showPhotoPicker = false
+  @State private var sourceType: UIImagePickerController.SourceType = .camera
+  @State private var isPickerPresented = false
+  @State private var showActionSheet = false
+  @FocusState private var isFocused: Bool
   
     var body: some View {
       ZStack {
@@ -16,12 +21,14 @@ struct CreateSlot: View {
         
         ScrollView {
           VStack(spacing: 30) {
+            Color.clear.height(50)
+            
             ZStack {
               RoundedRectangle(cornerRadius: 32)
                 .fill(LinearGradient(colors: [Color(hex: "#340ACE"), Color(hex: "#1A0568")], startPoint: .top, endPoint: .bottom))
                 .height(182)
               
-              LinearGradient(gradient: .init(colors: [Color(hex: "37CAFF"), Color(hex: "FF37F5")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1 , y: 0))
+              LinearGradient(gradient: .init(colors: [Color(hex: "37CAFF"), Color(hex: "FF37F5")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1, y: 0))
                 .mask {
                   RoundedRectangle(cornerRadius: 32)
                     .stroke(lineWidth: 2)
@@ -72,13 +79,13 @@ struct CreateSlot: View {
                           .hPadding(12)
                           .lineLimit(1)
                           .customStroke(color: Color(hex: "06670E"), width: 1)
-                        if ["500","3000"].contains(calcPrice(tile: vm.currentTile)) {
+
+                        if ["500", "3000"].contains(calcPrice(tile: vm.currentTile)) {
                           Image(.coins)
                             .resizableToFit(height: 20)
                         }
                       }
                       .yOffset(-4)
-                      
                     }
                 }
                 .disabled(calcPrice(tile: vm.currentTile) == "NOT ENOUGH COINS")
@@ -96,9 +103,6 @@ struct CreateSlot: View {
                 }
               }
               .yOffset(20)
-              
-              
-              
             }
             
             ZStack {
@@ -157,13 +161,13 @@ struct CreateSlot: View {
                           .hPadding(12)
                           .lineLimit(1)
                           .customStroke(color: Color(hex: "06670E"), width: 1)
-                        if ["500","3000"].contains(calcPrice(tile: vm.currentBonusTile)) {
+                        
+                        if ["500", "3000"].contains(calcPrice(tile: vm.currentBonusTile)) {
                           Image(.coins)
                             .resizableToFit(height: 20)
                         }
                       }
                       .yOffset(-4)
-                      
                     }
                 }
                 .disabled(calcPrice(tile: vm.currentBonusTile) == "NOT ENOUGH COINS")
@@ -183,13 +187,12 @@ struct CreateSlot: View {
               .yOffset(20)
             }
             
-            
             ZStack {
               RoundedRectangle(cornerRadius: 32)
                 .fill(LinearGradient(colors: [Color(hex: "#340ACE"), Color(hex: "#1A0568")], startPoint: .top, endPoint: .bottom))
                 .height(182)
               
-              LinearGradient(gradient: .init(colors: [Color(hex: "37CAFF"), Color(hex: "FF37F5")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1 , y: 0))
+              LinearGradient(gradient: .init(colors: [Color(hex: "37CAFF"), Color(hex: "FF37F5")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1, y: 0))
                 .mask {
                   RoundedRectangle(cornerRadius: 32)
                     .stroke(lineWidth: 2)
@@ -240,13 +243,12 @@ struct CreateSlot: View {
                           .hPadding(12)
                           .lineLimit(1)
                           .customStroke(color: Color(hex: "06670E"), width: 1)
-                        if ["500","3000"].contains(calcPrice(tile: vm.currentBg)) {
+                        if ["500", "3000"].contains(calcPrice(tile: vm.currentBg)) {
                           Image(.coins)
                             .resizableToFit(height: 20)
                         }
                       }
                       .yOffset(-4)
-                      
                     }
                 }
                 .disabled(calcPrice(tile: vm.currentBg) == "NOT ENOUGH COINS")
@@ -265,12 +267,199 @@ struct CreateSlot: View {
               }
               .yOffset(20)
             }
+            
+            HStack {
+              Image(.firstvariant)
+                .resizableToFit()
+                .overlay(.bottom) {
+                  Button {
+                    withAnimation {
+                      vm.bonusVariant = 1
+                    }
+                  } label: {
+                    Image(vm.bonusVariant == 1 ? .readybtn : .setbtn)
+                      .resizableToFit(height: 50)
+                  }
+                  .yOffset(20)
+                }
+              
+              Image(.secondvariant)
+                .resizableToFit()
+                .overlay(.bottom) {
+                  Button {
+                    withAnimation {
+                      vm.bonusVariant = 2
+                    }
+                  } label: {
+                    Image(vm.bonusVariant == 2 ? .readybtn : .setbtn)
+                      .resizableToFit(height: 50)
+                  }
+                  .yOffset(20)
+                }
+            }
+            .hPadding()
+            .padding(.top)
+            
+            HStack {
+              Button {
+                nm.path = []
+              } label: {
+                Image(.cbackbtn)
+                  .resizableToFit(height: 52)
+              }
+              
+              Button {
+                
+              } label: {
+                Image(.continuebtn)
+                  .resizableToFit(height: 54)
+              }
+            }
+            .vPadding()
+            Color.clear.height(300)
           }
         }
-        .yOffset(vm.h*0.2)
+        .scrollMask(0.1, 0.9)
+        .scrollIndicators(.hidden)
+        .yOffset(vm.h*0.25)
+             
+        Image(.fotocover)
+          .resizableToFit()
+          .overlay {
+            if let image = vm.previewImage {
+              Image(uiImage: image)
+                .resizableToFill()
+                .mask {
+                  Image(.fotocover)
+                    .resizableToFit()
+                }
+            }
+          }
+          .overlay {
+            Button {
+              showActionSheet = true
+            } label: {
+              Image(.uploadbtn)
+                .resizableToFit(height: 120)
+            }
+            .yOffset(20)
+          }
+          .overlay(.bottom) {
+            Image(.slotnametfbg)
+              .resizableToFit()
+              .overlay {
+                ZStack {
+                  LinearGradient(stops: [
+                    .init(color: Color(hex: "#FFF866"), location: 0),
+                    .init(color: Color(hex: "#FFB515"), location: 0.5),
+                    .init(color: Color(hex: "#FFB515"), location: 1)], startPoint: .bottom, endPoint: .top)
+                  .height(40)
+                  .mask {
+                    Text("SLOT NAME")
+                      .lootsFont(size: 21, style: .killjoy, color: .white)
+                  }
+                  .transparentIf(!vm.slotName.isEmpty || isFocused)
+                  .animation(.easeInOut, value: vm.slotName.isEmpty || !isFocused)
+                  .allowsHitTesting(false)
+                  
+                  
+                  ZStack {
+                      // Gradient text overlay
+                      LinearGradient(
+                          colors: [
+                              Color(hex: "#FFF866"),
+                              Color(hex: "#FFB515"),
+                              Color(hex: "#FFB515")
+                          ],
+                          startPoint: .bottom,
+                          endPoint: .top
+                      )
+                      .mask(
+                          Text(vm.slotName.isEmpty ? "" : vm.slotName)
+                              .lootsFont(size: 21, style: .killjoy, color: .white)
+                              .multilineTextAlignment(.center)
+                              .lineLimit(1)
+                              .width(vm.w*0.7)
+                              .minimumScaleFactor(0.5)
+                      )
+                    
+                      TextField("", text: $vm.slotName)
+                          .lootsFont(size: 21, style: .killjoy, color: .white)
+                          .multilineTextAlignment(.center)
+                          .lineLimit(1)
+                          .opacity(0.1)
+                          .focused($isFocused)
+                          .width(vm.w*0.7)
+                  }
+                }
+              }
+              .yOffset(vm.h*0.03)
+            
+          }
+          .yOffset(-vm.h*0.4)
       }
+      .navigationBarBackButtonHidden()
       .onAppear {
         startAnimation = true
+      }
+      .sheet(isPresented: $showPhotoPicker) {
+        ImagePicker(image: $vm.originalImage, isShown: self.$showPhotoPicker, sourceType: self.sourceType)
+          .background( content: {
+            Color.black.opacity(0.8)
+              .ignoresSafeArea()
+          })
+      }
+      .sheet(isPresented: $isPickerPresented) {
+        PhotoPicker(selectedImage: $vm.originalImage)
+      }
+      .sheet(isPresented: $showActionSheet) {
+        ZStack {
+          VStack(spacing: 20) {
+            Button {
+              showPhotoPicker = true
+              showActionSheet = false
+            } label: {
+              Text("Camera")
+                .lootsFont(size: 18, style: .gilroyBold, color: .white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(hex: "009B15"))
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            
+            Button {
+              isPickerPresented = true
+              showActionSheet = false
+            } label: {
+              Text("Photo Library")
+                .lootsFont(size: 18, style: .gilroyBold, color: .white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(hex: "009B15"))
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            
+            Button {
+              showActionSheet = false
+            } label: {
+              Text("Cancel")
+                .lootsFont(size: 20, style: .gilroyBold, color: .white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(hex: "D3484B"))
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+          }
+        }
+        .offset(y: 20)
+        .vPadding()
+        .presentationDetents([.fraction(1/3)])
+        .padding()
+        .background(BackgroundClearView(color: Color(hex: "808080").opacity(0.1)))
+        .background(.ultraThinMaterial)
       }
     }
   

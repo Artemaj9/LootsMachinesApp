@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "continuebtn.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

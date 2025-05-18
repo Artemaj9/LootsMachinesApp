@@ -22,6 +22,7 @@ struct DailyBonus: View {
         .blendMode(.screen)
         .blendMode(.luminosity)
         .animation(.easeIn(duration: 1), value: startAnimation)
+        .frame(width: vm.w)
       
       Image(.bgrays)
         .resizableToFit()

@@ -5,8 +5,8 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>CCKillJoy Regular.ttf</string>
-		<string>Gilroy-Bold.ttf</string>
 		<string>Gilroy-Black.ttf</string>
+		<string>Gilroy-Bold.ttf</string>
 	</array>
 </dict>
 </plist>
