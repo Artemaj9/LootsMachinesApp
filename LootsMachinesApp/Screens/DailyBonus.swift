@@ -15,10 +15,13 @@ struct DailyBonus: View {
         .onTapGesture {
           vm.showBonus = false
         }
-       
-      Image(.bonus)
-        .resizableToFit()
-        .hPadding()
+      
+      Image(.mysteriousglow)
+        .resizableToFill()
+        .opacity(startAnimation ? 0.7 : 0)
+        .blendMode(.screen)
+        .blendMode(.luminosity)
+        .animation(.easeIn(duration: 1), value: startAnimation)
       
       Image(.bgrays)
         .resizableToFit()
@@ -29,14 +32,11 @@ struct DailyBonus: View {
         .blendMode(.luminosity)
         .scaleEffect(startAnimation ? 2 : 1)
         .animation(.easeIn(duration: 3), value: startAnimation)
-            
-      Image(.mysteriousglow)
-        .resizableToFill()
-     //   .clipped()
-        .opacity(startAnimation ? 0.7 : 0)
-        .blendMode(.screen)
-        .blendMode(.luminosity)
-        .animation(.easeIn(duration: 1), value: startAnimation)
+      
+      Image(.bonus)
+        .resizableToFit()
+        .hPadding()
+      
       Button {
         vm.showBonus = false
       } label: {
@@ -44,12 +44,10 @@ struct DailyBonus: View {
           .lootsFont(size: 18, style: .killjoy, color: .white)
           .tappableBg()
       }
-    
-        .yOffset(vm.h*0.35)
-        .transparentIfNot(startAnimation)
-        .animation(.easeIn(duration: 1).delay(0.7), value: startAnimation)
+      .yOffset(vm.h*0.35)
+      .transparentIfNot(startAnimation)
+      .animation(.easeIn(duration: 1).delay(0.7), value: startAnimation)
     }
-    .frame(vm.w, vm.h)
     .onAppear {
       startAnimation = true
     }

@@ -10,9 +10,14 @@ final class GameViewModel: ObservableObject {
   @Published var size: CGSize = CGSize(width: 393, height: 851)
   @Published var isSplash = true
   
-  @Published var balance = 10000
+  @Published var balance = 600
   @Published var slots: [String] = []
   @Published var showBonus = false
+  
+  // MARK: SLOT CREATION
+  @Published var currentTile = 1
+  @Published var currentBonusTile = 1
+  @Published var currentBg = 1
   
   // MARK: - Loading
   private var cancellables = Set<AnyCancellable>()
@@ -22,6 +27,9 @@ final class GameViewModel: ObservableObject {
   }
   
   func resetvm() {
+    currentTile = 1
+    currentBonusTile = 1
+    currentBg = 1
   }
   
   // MARK: - Layout

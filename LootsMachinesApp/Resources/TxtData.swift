@@ -11,5 +11,9 @@ enum Txt {
   static let disclaimer = "This app is intended for entertainment purposes only.\nThere is no real money gambling, no cash prizes, and no opportunity to win real-world rewards. All coins, spins, and winnings are purely virtual and used for gameplay and customization."
 
   static let dot = "\u{2022}"
+  
+  static let tilesType = ["PIRATES", "PLANETS", "FRUITS", "CANDIES", "JEWERLY"]
+  static let bonusTiles = ["PIRATE COIN", "ROCKET", "NUMBER 7", "CAKE", "CRYSTAL"]
+  static let bgTitle = ["ISLAND", "SPACE", "FOREST", "CANDYLAND", "CAVE"]
 }
 
