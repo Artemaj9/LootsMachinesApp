@@ -11,19 +11,120 @@ final class GameViewModel: ObservableObject {
   @Published var isSplash = true
   
   @Published var balance = 600
-  @Published var slots: [String] = []
+  @Published var slots: [Slot] = []
   @Published var showBonus = false
   
   @Published var originalImage: UIImage? = UIImage(resource: .bg1)
   @Published var previewImage: UIImage? = UIImage(resource: .bg1)
-  
+  @Published var showSlotInfo = false
   // MARK: SLOT CREATION
   @Published var currentTile = 1
   @Published var currentBonusTile = 1
   @Published var currentBg = 1
   @Published var slotName = ""
-  
   @Published var bonusVariant = 1
+  
+  // MARK: - Game
+  @Published var tableSize: CGSize = .zero
+  @Published var isFirstSpin = true
+  @Published var freespins = 0
+  
+  
+  @Published var currentPayout = 0
+  @Published var bet = [500, 500, 500, 500]
+  @Published var itemsMatrix = Array(repeating: Array(repeating: 1, count: 50), count: 5)
+  @Published var currentMatrix = Array(repeating: Array(repeating: 1, count: 3), count: 5)
+  @Published var newPosition: [CGFloat] = Array(repeating: 0, count: 5)
+  @Published var isPlusActive = true
+  @Published var linesPlusActive = true
+  @Published var balanceAnimCount: Double = 0
+  @Published var maxBetAnimCount: Double = 0
+  @Published var isRotationWin = false
+  @Published var highlightItemsMatrix = Array(repeating: Array(repeating: 0, count: 50), count: 5)
+  @Published var highlightMatrix = Array(repeating: Array(repeating: 0, count: 3), count: 5)
+  
+  private var initialProbabilities: [Double] = [10, 9, 8, 7, 6, 5, 4, 3, 2]
+  private var probabilities: [Double] = [10, 9, 8, 7, 6, 5, 4, 3, 2]
+  
+  @Published var isFreeSpin = false
+  @Published var freespinWin = 0
+
+
+  
+  // MARK: MATRIX LOGIC
+  func fillItems(isFirst: Bool) {
+      highlightMatrix = Array(repeating: Array(repeating: 0, count: 3), count: 5)
+      highlightItemsMatrix = Array(repeating: Array(repeating: 0, count: 50), count: 5)
+      probabilities = initialProbabilities
+      let coolSlot = randomNumber(probabilities: probabilities)
+      let coolSlot2 = randomNumber(probabilities: probabilities)
+      if coolSlot < 8 {
+          probabilities[coolSlot] *= 3
+          probabilities[coolSlot2] *= 2
+          print("Probabilities: \(probabilities)")
+      }
+      if isFreeSpin {
+          probabilities[8] = 0
+      }
+      for j in 0...4 {
+          for i in 0...49 {
+              if isFirst || i < 46 {
+                  itemsMatrix[j][i] = randomNumber(probabilities: probabilities) + 1
+              }
+          }
+      }
+  }
+  
+  func fillCurrentNew() {
+      for i in 0...4 {
+          for j in 0...2 {
+              currentMatrix[i][j] = itemsMatrix[i][49 - j]
+          }
+      }
+  }
+  
+  func randomNumber(probabilities: [Double]) -> Int {
+      let sum = probabilities.reduce(0, +)
+      let rnd = Double.random(in: 0.0 ..< sum)
+      var accum = 0.0
+      
+      for (i, p) in probabilities.enumerated() {
+          accum += p
+          if rnd < accum {
+              return i
+          }
+      }
+      return (probabilities.count - 1)
+  }
+  
+  
+  // MARK: - Animation
+  
+  func startBalanceAnimation() {
+      Timer
+          .publish(every: 0.02, on: .main, in: .common)
+          .autoconnect()
+          .sink { [unowned self] _ in
+              if balanceAnimCount < 1 {
+                  balanceAnimCount += 0.02
+              } else {
+                  cancelTimers()
+              }
+          }
+          .store(in: &cancellables)
+  }
+  
+  func resetFreespins() {
+      isFreeSpin = false
+      freespinWin = 0
+      freespins = 0
+  }
+  
+  func cancelTimers() {
+      for item in cancellables {
+          item.cancel()
+      }
+  }
   // MARK: - Loading
   private var cancellables = Set<AnyCancellable>()
   
@@ -40,6 +141,9 @@ final class GameViewModel: ObservableObject {
     currentTile = 1
     currentBonusTile = 1
     currentBg = 1
+    showSlotInfo = false
+    originalImage = nil
+    previewImage = nil
   }
   
   // MARK: - Layout

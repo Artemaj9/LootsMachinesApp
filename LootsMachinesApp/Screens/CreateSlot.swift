@@ -329,6 +329,7 @@ struct CreateSlot: View {
             if let image = vm.previewImage {
               Image(uiImage: image)
                 .resizableToFill()
+                .allowsHitTesting(false)
                 .mask {
                   Image(.fotocover)
                     .resizableToFit()
@@ -361,7 +362,6 @@ struct CreateSlot: View {
                   .transparentIf(!vm.slotName.isEmpty || isFocused)
                   .animation(.easeInOut, value: vm.slotName.isEmpty || !isFocused)
                   .allowsHitTesting(false)
-                  
                   
                   ZStack {
                       // Gradient text overlay
