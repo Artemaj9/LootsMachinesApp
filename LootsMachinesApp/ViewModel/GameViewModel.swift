@@ -11,11 +11,37 @@ final class GameViewModel: ObservableObject {
   @Published var isSplash = true
   
   @Published var balance = 600
-  @Published var slots: [Slot] = []
+  @Published var slots: [Slot] = [
+    Slot(
+      currentTile: 1,
+      currentBonusTile: 2,
+      currentBg: 3,
+      bonusVariant: 1,
+      slotName: "klklkk",
+      image: UIImage(resource: .bg2)
+    ),
+    Slot(
+      currentTile: 1,
+      currentBonusTile: 2,
+      currentBg: 3,
+      bonusVariant: 2,
+      slotName: "klkldddkk",
+      image: UIImage(resource: .bg3)
+    ),
+    
+    Slot(
+      currentTile: 1,
+      currentBonusTile: 2,
+      currentBg: 4,
+      bonusVariant: 2,
+      slotName: "klkldddkk",
+      image: UIImage(resource: .bg4)
+    )
+  ]
   @Published var showBonus = false
   
-  @Published var originalImage: UIImage? = UIImage(resource: .bg1)
-  @Published var previewImage: UIImage? = UIImage(resource: .bg1)
+  @Published var originalImage: UIImage? = nil
+  @Published var previewImage: UIImage? = nil
   @Published var showSlotInfo = false
   @Published var showDelete = false
   
@@ -54,7 +80,6 @@ final class GameViewModel: ObservableObject {
   @Published var freespinWin = 0
   @Published var bonusCount = 0
   
-  
   // MARK: Timer daily
   @Published var nowDate = Date()
   @AppStorage("lastDate") var lastDate = 0
@@ -65,7 +90,6 @@ final class GameViewModel: ObservableObject {
   var countdownTime: TimeInterval = 24 * 3600
   var cancellable: AnyCancellable?
   @Published var slotToDel = Slot()
-  
   
   func startBonusTimer() {
         let lastSavedTime = UserDefaults.standard.object(forKey: "countdownEndTime") as? Date
@@ -128,7 +152,6 @@ final class GameViewModel: ObservableObject {
   @Published var bonusGameState = 1
   @Published var bonusWin = [0, 0, 0]
   @Published var bonusUserSelection = 1
-  
   @Published var showBigWin = false
   
   func generateBonusWin(for variant: Int) {
@@ -371,7 +394,6 @@ final class GameViewModel: ObservableObject {
       return (probabilities.count - 1)
   }
   
-  
   // MARK: - Animation
   
   func startBalanceAnimation() {
@@ -410,7 +432,7 @@ final class GameViewModel: ObservableObject {
       .assign(to: &$previewImage)
     
     startBonusTimer()
-    slots = loadSlotsFromFile() ?? []
+   // slots = loadSlotsFromFile() ?? []
   }
     // events = loadEventsFromFile() ?? []
   
@@ -424,6 +446,7 @@ final class GameViewModel: ObservableObject {
     justCreated = false
     showBigWin = false
     luckyLinesDraw = Array(repeating: false, count: 9)
+    freespins = 0
   }
   
   // MARK: - Layout

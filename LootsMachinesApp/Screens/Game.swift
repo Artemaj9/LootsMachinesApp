@@ -374,7 +374,7 @@ struct Game: View {
                       vm.balanceAnimCount = 0
                       vm.isRotationWin = false
                     
-                  if !vm.isFreeSpin {
+                if !vm.freespins >= 1 {
                       vm.startBalanceAnimation()
                       vm.balance -= Int(vm.bet)*vm.linesCount
                   }

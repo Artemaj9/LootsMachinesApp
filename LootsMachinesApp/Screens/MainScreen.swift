@@ -9,49 +9,38 @@ struct MainScreen: View {
   @EnvironmentObject var vm: GameViewModel
   
   var body: some View {
-      ZStack {
-        bg
-        header
-        createSlot
-        browseSlots
-        dailyBonus
-        
-        HStack {
+    ZStack {
+      bg
+      header
+      createSlot
+      browseSlots
+  
+      
+      if vm.slots.isEmpty {
+        Text("NO SLOTS YET")
+          .lootsFont(size: 27, style: .killjoy, color: .white)
+          .yOffset(vm.h*0.3)
+      } else {
+        HStack(spacing: 20) {
           if let lastSlot = vm.slots[safe: 0] {
             SlotCell(slot: lastSlot)
           }
           if let plastSlot =  vm.slots[safe: 1] {
             SlotCell(slot: plastSlot)
           }
-
-          
-          if let plastSlot =  vm.slots[safe: 1] {
-            Image(.slotcell)
-              .resizableToFit(height: 200)
-              .overlay(.top) {
-                RoundedRectangle(cornerRadius: 24)
-                  .overlayMask {
-                    Image(uiImage: plastSlot.image ?? UIImage(resource: .bg2))
-                      .resizableToFill()
-                  }
-                  .hPadding(4)
-                  .height(160)
-              }
-              .overlay(.bottom) {
-                Button {
-                  nm.path.append(.game(plastSlot))
-                } label: {
-                  Image(.playbtn)
-                    .resizableToFit(height: 44)
-                }
-              }
-          }
         }
+        .yOffset(vm.h*0.3)
+      }
+      
+      dailyBonus
         
         Delete()
           .transparentIfNot(vm.showDelete)
       }
       .addNavigationRoutes(path: $nm.path)
+      .onAppear {
+        vm.resetvm()
+      }
   }
   
   private var bg: some View {

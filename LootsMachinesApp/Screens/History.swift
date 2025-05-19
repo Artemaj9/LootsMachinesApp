@@ -7,7 +7,6 @@ import SwiftUI
 struct History: View {
   @EnvironmentObject var nm: NavigationStateManager
   @EnvironmentObject var vm: GameViewModel
-  @State private var showDelete = false
   
   var body: some View {
     ZStack {
@@ -44,7 +43,7 @@ struct History: View {
       }
       
       ZStack {
-        if showDelete {
+        if vm.showDelete {
           Delete()
         }
       }
