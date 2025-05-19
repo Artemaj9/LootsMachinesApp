@@ -55,7 +55,8 @@ struct Game: View {
             .xOffset(12)
           }
           .yOffset(vm.header)
-        Group {
+        
+        ZStack {
           Rectangle()
             .fill(Color.white.opacity(0.001))
             .height(vm.h*0.4)
@@ -168,24 +169,25 @@ struct Game: View {
                           }
                           .offset(y: vm.newPosition[4])
                           .offset(y: -slotHeight * 47 + 30)
-                          .offset(y: vm.size.width > 400 ? 6 : 0)
-                          .offset(x: vm.size.height > 910 ? 4 : 0)
-                          .offset(x: vm.size.height > 910  ? 4 : 0)
+//                          .offset(y: vm.size.width > 400 ? 6 : 0)
+//                          .offset(x: vm.size.height > 910 ? 4 : 0)
+//                          .offset(x: vm.size.height > 910  ? 4 : 0)
                         }
                        .allowsHitTesting(false)
                       }
-                        .offset(y: vm.size.width < 380 ? -16 : 0)
-                        .offset(y: vm.size.width < 380 ? -16 : 0)
-                        .scaleEffect(vm.size.height > 910 ? 1.03 : 1)
-                        .scaleEffect(vm.size.height > 910  ? 1.07 : 1)
-                        .scaleEffect(vm.size.height > 910 ? 1.07 : 1)
-                        .scaleEffect(vm.size.height > 910 ? 1.08 : 1)
-                        .offset(y: vm.size.height > 910 ? 16 : 0)
-                        .offset(y: vm.size.height > 910 ? 16 : 0)
-                        .offset(y: vm.size.height > 910  ? 12 : 0)
+//                        .offset(y: vm.size.width < 380 ? -16 : 0)
+//                        .offset(y: vm.size.width < 380 ? -16 : 0)
+//                        .scaleEffect(vm.size.height > 910 ? 1.03 : 1)
+//                        .scaleEffect(vm.size.height > 910  ? 1.07 : 1)
+//                        .scaleEffect(vm.size.height > 910 ? 1.07 : 1)
+//                        .scaleEffect(vm.size.height > 910 ? 1.08 : 1)
+//                        .offset(y: vm.size.height > 910 ? 16 : 0)
+//                        .offset(y: vm.size.height > 910 ? 16 : 0)
+//                        .offset(y: vm.size.height > 910  ? 12 : 0)
                     }
                     .mask {
                       Rectangle()
+                        .fill(LinearGradient(stops: [.init(color: .white.opacity(0), location: 0.02), .init(color: .white.opacity(1), location: 0.1), .init(color: .white.opacity(1), location: 0.9), .init(color: .white.opacity(0), location: 0.95), ], startPoint: .top, endPoint: .bottom))
                         .height(vm.h*0.4)
                             .scaleEffect(x: vm.size.height > 910 ?  1.07 : 1)
                             .scaleEffect(x: vm.size.height > 910  ?  1.07 : 1)
@@ -213,7 +215,6 @@ struct Game: View {
                   }
                 }
         }
-        .scrollMask(0.1, 0.9)
         .yOffset(-vm.h*0.1)
        
         if iteration >= 2 {
@@ -222,16 +223,18 @@ struct Game: View {
               .lootsFont(size: 12, style: .gilroyBold, color: .white)
             
             HStack {
-              LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0.2), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 0.9)], startPoint: .top, endPoint: .bottom)
-                .height(20)
-                .mask {
                   Text("\(String(vm.lastWin))")
-                }
+                    .lootsFont(size: 21, style: .killjoy, color: .white)
+                    .overlayMask {
+                      LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0.2), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 0.9)], startPoint: .top, endPoint: .bottom)
+                        .height(20)
+                    }
+            
               Image(.coins)
                 .resizableToFit(height: 14)
             }
           }
-          .yOffset(vm.h*0.2)
+          .yOffset(vm.h*0.15)
         }
       
         Image(.controlpanel)
@@ -349,7 +352,7 @@ struct Game: View {
                   }
               }
               Button {
-                  if vm.isFreeSpin && vm.freespins > 0 {
+                  if  vm.freespins > 0 {
                       vm.freespins -= 1
                   }
                       withAnimation(.none) {
@@ -403,10 +406,9 @@ struct Game: View {
                           }
                        //   vm.plusActiveCheck()
                        //   vm.linesPlusActiveCheck()
-
-
                       
-                          if vm.balance <= 100 {
+                          if vm.balance <= 10 {
+                            vm.isBonusReady = true
                               vm.showBonus = true
                           }
                           print("*******")
@@ -414,28 +416,6 @@ struct Game: View {
                           vm.startAnimation()
                       }
                       
-                  Timer.scheduledTimer(withTimeInterval: 7, repeats: false) { _ in
-                      
-      //                vm.plusActiveCheck()
-      //                vm.linesPlusActiveCheck()
-      //
-      //                if vm.bonusMythCount == 3 {
-      //                    vm.isBonusGame = true
-      //                    vm.freespinAttempts = 1
-      //                } else if vm.bonusMythCount == 4 {
-      //                    vm.isBonusGame = true
-      //                    vm.freespinAttempts = 2
-      //                } else if vm.bonusMythCount == 5 {
-      //                    vm.isBonusGame = true
-      //                    vm.freespinAttempts = 3
-      //                }
-      //
-      //                if vm.isFreeSpin && vm.freespins == 0 {
-      //                    vm.isGrandWin = true
-      //                    vm.startGradWinAnimation()
-      //                }
-                     // fix: enabledSpin = true
-                  }
                       withAnimation(.spring(response: 1.8, dampingFraction: 0.8)) {
                           let newindex =  Int.random(in: 20...30)
                           vm.newPosition[0] = CGFloat( Int(slotHeight) * newindex)
@@ -497,6 +477,9 @@ struct Game: View {
         SlotInfo(slot: slot)
           .transparentIfNot(vm.showSlotInfo)
           .animation(.easeInOut, value: vm.showSlotInfo)
+        
+        dailyBonus
+        
         ZStack {
           if vm.isBonusGame {
             BonusGame(slot: slot)
@@ -504,6 +487,14 @@ struct Game: View {
         }
         .transparentIfNot(vm.isBonusGame)
         .animation(.default, value: vm.isBonusGame)
+        
+        ZStack {
+          if vm.showBigWin {
+            BigWin()
+          }
+        }
+        .transparentIfNot(vm.showBigWin)
+        .animation(.default, value: vm.showBigWin)
       }
       .sheet(isPresented: $showPicker) {
         ZStack {
@@ -555,6 +546,16 @@ struct Game: View {
           
         }
     }
+  }
+  
+  private var dailyBonus: some View {
+    ZStack {
+      if vm.showBonus {
+        DailyBonus()
+      }
+    }
+    .transparentIfNot(vm.showBonus)
+    .animation(.easeInOut, value: vm.showBonus)
   }
 }
 

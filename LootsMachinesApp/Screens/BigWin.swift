@@ -1,10 +1,10 @@
 //
-//  DailyBonus.swift
+//  BigWin.swift
 //
 
 import SwiftUI
 
-struct DailyBonus: View {
+struct BigWin: View {
   @EnvironmentObject var vm: GameViewModel
   @State private var startAnimation = false
   
@@ -12,9 +12,10 @@ struct DailyBonus: View {
     ZStack {
       Color(hex: "1C0035").opacity(0.8)
         .ignoresSafeArea()
-        .onTapGesture {
-          vm.showBonus = false
-        }
+      
+      Image(.youwin)
+        .resizableToFit(height: 150)
+        .yOffset(-vm.h*0.2)
       
       Image(.mysteriousglow)
         .resizableToFill()
@@ -37,30 +38,28 @@ struct DailyBonus: View {
       Image(.wintxtbg)
         .resizableToFit(height: 88)
         .hPadding()
-        .overlay {
-          Text(vm.isBonusReady ? "1000" : vm.timeRemaining)
-            .lootsFont(size: 46, style: .killjoy, color: .white)
-            .overlayMask {
-              LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0.2), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 0.9)], startPoint: .top, endPoint: .bottom)
-            }
-        }
-//      Image(.bonus)
-//        .resizableToFit()
-//        .hPadding()
       
-      Button {
-        vm.showBonus = false
-        if vm.isBonusReady {
-          vm.collectBonus()
+      LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0.2), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 0.9)], startPoint: .top, endPoint: .bottom)
+        .height(50)
+        .mask {
+          Text("\(vm.lastWin)")
+            .lootsFont(size: 46, style: .killjoy, color: .white)
         }
-      } label: {
-        Text("TAP TO CONTINUE")
-          .lootsFont(size: 18, style: .killjoy, color: .white)
-          .tappableBg()
+
+      Text("TAP TO CONTINUE")
+        .lootsFont(size: 18, style: .killjoy, color: .white)
+        .transparentIfNot(startAnimation)
+        .animation(.easeInOut.delay(0.7), value: startAnimation)
+        .yOffset(vm.h*0.15)
+      
+      Image(.goldzal)
+        .resizableToFit()
+        .yOffset(vm.h*0.4)
+    }
+    .onTapGesture {
+      withAnimation {
+        vm.showBigWin = false
       }
-      .yOffset(vm.h*0.35)
-      .transparentIfNot(startAnimation)
-      .animation(.easeIn(duration: 1).delay(0.7), value: startAnimation)
     }
     .onAppear {
       startAnimation = true
@@ -69,6 +68,6 @@ struct DailyBonus: View {
 }
 
 #Preview {
-  DailyBonus()
+    BigWin()
     .vm
 }

@@ -17,6 +17,7 @@ final class GameViewModel: ObservableObject {
   @Published var originalImage: UIImage? = UIImage(resource: .bg1)
   @Published var previewImage: UIImage? = UIImage(resource: .bg1)
   @Published var showSlotInfo = false
+  @Published var showDelete = false
   
   // MARK: SLOT CREATION
   @Published var currentTile = 1
@@ -46,18 +47,89 @@ final class GameViewModel: ObservableObject {
   @Published var highlightMatrix = Array(repeating: Array(repeating: 0, count: 3), count: 5)
   @Published var lastWin = 0
   
-  private var initialProbabilities: [Double] = [1, 1, 2, 3, 4, 5, 6, 7, 8, 4]
-  private var probabilities: [Double] = [1, 1, 2, 3, 4, 5, 6, 7, 8, 4]
+  private var initialProbabilities: [Double] = [1, 1, 2, 3, 4, 5, 6, 7, 8, 10]
+  private var probabilities: [Double] = [1, 1, 2, 3, 4, 5, 6, 7, 8, 10]
   
   @Published var isFreeSpin = false
   @Published var freespinWin = 0
   @Published var bonusCount = 0
+  
+  
+  // MARK: Timer daily
+  @Published var nowDate = Date()
+  @AppStorage("lastDate") var lastDate = 0
+  @Published var dailyBonus = 1000
+  @Published var timeCount = 0
+  @Published var timeRemaining = ""
+  @Published var isBonusReady = true
+  var countdownTime: TimeInterval = 24 * 3600
+  var cancellable: AnyCancellable?
+  @Published var slotToDel = Slot()
+  
+  
+  func startBonusTimer() {
+        let lastSavedTime = UserDefaults.standard.object(forKey: "countdownEndTime") as? Date
+        let now = Date()
+        
+        if let lastSavedTime = lastSavedTime {
+            let timeLeft = lastSavedTime.timeIntervalSince(now)
+            if timeLeft > 0 {
+                countdownTime = timeLeft
+            } else {
+                isBonusReady = true
+                timeRemaining = "00:00:00"
+                return
+            }
+        } else {
+            let countdownEndTime = now.addingTimeInterval(countdownTime)
+            UserDefaults.standard.set(countdownEndTime, forKey: "countdownEndTime")
+        }
+      
+        cancellable = Timer
+            .publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.updateTimer()
+            }
+    }
+
+  func updateTimer() {
+          let now = Date()
+          let countdownEndTime = UserDefaults.standard.object(forKey: "countdownEndTime") as? Date ?? now
+          let timeInterval = countdownEndTime.timeIntervalSince(now)
+          
+          if timeInterval <= 0 {
+              isBonusReady = true
+              timeRemaining = "00:00:00"
+              cancellable?.cancel()
+          } else {
+              let hours = Int(timeInterval) / 3600
+              let minutes = (Int(timeInterval) % 3600) / 60
+              let seconds = Int(timeInterval) % 60
+              timeRemaining = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+          }
+      }
+
+  func collectBonus() {
+      UserDefaults.standard.set(Date(), forKey: "lastBonusTime")
+      balance += dailyBonus
+      isBonusReady = false
+      cancellable?.cancel()
+      UserDefaults.standard.set(
+          Date().addingTimeInterval(countdownTime),
+          forKey: "countdownEndTime"
+      )
+      timeRemaining = "24:00:00"
+      startBonusTimer()
+  }
   
   // MARK: Bonus Game
   @Published var isBonusGame = false
   @Published var bonusGameState = 1
   @Published var bonusWin = [0, 0, 0]
   @Published var bonusUserSelection = 1
+  
+  @Published var showBigWin = false
   
   func generateBonusWin(for variant: Int) {
       switch variant {
@@ -78,7 +150,7 @@ final class GameViewModel: ObservableObject {
       let index = bonusUserSelection - 1
       let reward = bonusWin[safe: index] ?? 0
       
-      DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
           if reward > 0 {
               self.freespins += reward
           }
@@ -160,6 +232,9 @@ final class GameViewModel: ObservableObject {
       currentPayout += totalPayout
       balance += totalPayout
       lastWin = totalPayout
+    if totalPayout >= 5000 {
+      showBigWin = true
+    }
       if isFreeSpin {
           freespinWin += totalPayout
       }
@@ -258,12 +333,12 @@ final class GameViewModel: ObservableObject {
       let coolSlot = randomNumber(probabilities: probabilities)
       let coolSlot2 = randomNumber(probabilities: probabilities)
       if coolSlot < 8 {
-          probabilities[coolSlot] *= 3
+          probabilities[coolSlot] *= 2
           probabilities[coolSlot2] *= 2
           print("Probabilities: \(probabilities)")
       }
-      if isFreeSpin {
-          probabilities[8] = 0
+    if freespins > 0 {
+          probabilities[9] = 0
       }
       for j in 0...4 {
           for i in 0...49 {
@@ -333,6 +408,9 @@ final class GameViewModel: ObservableObject {
         downscaleImage(image: image)
       }
       .assign(to: &$previewImage)
+    
+    startBonusTimer()
+    slots = loadSlotsFromFile() ?? []
   }
     // events = loadEventsFromFile() ?? []
   
@@ -344,6 +422,7 @@ final class GameViewModel: ObservableObject {
     originalImage = nil
     previewImage = nil
     justCreated = false
+    showBigWin = false
     luckyLinesDraw = Array(repeating: false, count: 9)
   }
   

@@ -18,22 +18,38 @@ struct History: View {
       if vm.slots.isEmpty {
         Text("NO SLOTS YET")
           .lootsFont(size: 27, style: .killjoy, color: .white)
-          .onTapGesture {
-            showDelete = true
-          }
       } else {
-        Text("Slots")
-          .lootsFont(size: 27, style: .killjoy, color: .white)
+        ScrollView {
+          VStack(alignment: .leading, spacing: 16) {
+            Color.clear.height(50)
+            ForEach(vm.slots.chunked(into: 2), id: \.self) { row in
+              HStack(spacing: 16) {
+                ForEach(row, id: \.self) { slot in
+                  SlotCell(slot: slot)
+                    .frame(maxWidth: .infinity)
+                }
+                
+                if row.count == 1 {
+                  Spacer()
+                }
+              }
+            }
+            Color.clear.height(250)
+          }
+          .padding()
+        }
+        .scrollMask(0.1, 0.9)
+        .yOffset(vm.h*0.15)
         
       }
       
       ZStack {
         if showDelete {
-          Delete(showDelete: $showDelete)
+          Delete()
         }
       }
-      .transparentIfNot(showDelete)
-      .animation(.easeIn, value: showDelete)
+      .transparentIfNot(vm.showDelete)
+      .animation(.easeIn, value: vm.showDelete)
       
     }
     .navigationBarBackButtonHidden()

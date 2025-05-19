@@ -15,6 +15,41 @@ struct MainScreen: View {
         createSlot
         browseSlots
         dailyBonus
+        
+        HStack {
+          if let lastSlot = vm.slots[safe: 0] {
+            SlotCell(slot: lastSlot)
+          }
+          if let plastSlot =  vm.slots[safe: 1] {
+            SlotCell(slot: plastSlot)
+          }
+
+          
+          if let plastSlot =  vm.slots[safe: 1] {
+            Image(.slotcell)
+              .resizableToFit(height: 200)
+              .overlay(.top) {
+                RoundedRectangle(cornerRadius: 24)
+                  .overlayMask {
+                    Image(uiImage: plastSlot.image ?? UIImage(resource: .bg2))
+                      .resizableToFill()
+                  }
+                  .hPadding(4)
+                  .height(160)
+              }
+              .overlay(.bottom) {
+                Button {
+                  nm.path.append(.game(plastSlot))
+                } label: {
+                  Image(.playbtn)
+                    .resizableToFit(height: 44)
+                }
+              }
+          }
+        }
+        
+        Delete()
+          .transparentIfNot(vm.showDelete)
       }
       .addNavigationRoutes(path: $nm.path)
   }

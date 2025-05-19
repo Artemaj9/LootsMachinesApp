@@ -318,7 +318,8 @@ struct CreateSlot: View {
                   slotName: vm.slotName,
                   image: vm.previewImage
                 )
-                vm.slots.append(newSlot)
+                vm.slots.insert(newSlot, at: 0)
+                saveSlotsToFile(slots: vm.slots)
                 vm.showCreatedGame = true
                 nm.path.append(.game(newSlot))
                 vm.justCreated = true

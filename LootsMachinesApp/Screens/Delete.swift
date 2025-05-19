@@ -5,7 +5,7 @@
 import SwiftUI
 
 struct Delete: View {
-  @Binding var showDelete: Bool
+  @EnvironmentObject var vm: GameViewModel
   
     var body: some View {
       ZStack {
@@ -17,7 +17,7 @@ struct Delete: View {
           .overlay(.bottom) {
             HStack {
               Button {
-                showDelete = false
+                vm.showDelete = false
               } label: {
                 Image(.bbtn)
                   .resizableToFit(height: 54)
@@ -25,7 +25,11 @@ struct Delete: View {
               
               Button {
                 // delete
-                showDelete = false
+                if let index = vm.slots.firstIndex(where: {$0 == vm.slotToDel}) {
+                  vm.slots.remove(at: index)
+                  saveSlotsToFile(slots: vm.slots)
+                }
+                vm.showDelete = false
               } label: {
                 Image(.deletbtn)
                   .resizableToFit(height: 54)
@@ -34,11 +38,11 @@ struct Delete: View {
             .yOffset(20)
           }
           .hPadding()
-        
       }
     }
 }
 
 #Preview {
-  Delete(showDelete: .constant(true))
+  Delete()
+    .vm
 }

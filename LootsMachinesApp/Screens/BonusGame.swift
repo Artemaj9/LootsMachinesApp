@@ -24,7 +24,6 @@ struct BonusGame: View {
         
         ZStack {
           RadialGradient(colors: [vm.bonusWin[0]  > 0 ? .white : .red, vm.bonusWin[0] > 0 ? .white.opacity(0) : .red.opacity(0)], center: .center, startRadius: 0, endRadius: 80)
-            .blendMode(.luminosity)
             .transparentIf(vm.bonusGameState == 1)
             .animation(.easeInOut, value: vm.bonusGameState)
           Image("tb\(slot.currentBonusTile)")
@@ -51,7 +50,6 @@ struct BonusGame: View {
         
         ZStack {
           RadialGradient(colors: [vm.bonusWin[1]  > 0 ? .white : .red, vm.bonusWin[1] > 0 ? .white.opacity(0) : .red.opacity(0)], center: .center, startRadius: 0, endRadius: 80)
-            .blendMode(.luminosity)
             .transparentIf(vm.bonusGameState == 1)
             .animation(.easeInOut, value: vm.bonusGameState)
             
@@ -79,7 +77,6 @@ struct BonusGame: View {
        
         ZStack {
           RadialGradient(colors: [vm.bonusWin[2]  > 0 ? .white : .red, vm.bonusWin[2] > 0 ? .white.opacity(0) : .red.opacity(0)], center: .center, startRadius: 0, endRadius: 80)
-            .blendMode(.luminosity)
             .transparentIf(vm.bonusGameState == 1)
             .animation(.easeInOut, value: vm.bonusGameState)
           
@@ -92,6 +89,7 @@ struct BonusGame: View {
               .mask {
                 Text(vm.bonusWin[2]  > 0 ? "WIN!" : "LOOSE!")
                   .lootsFont(size: 56, style: .killjoy, color: .white)
+                  .minimumScaleFactor(0.5)
                   .rotationEffect(Angle(degrees: 15))
               }
            }
