@@ -57,7 +57,7 @@ struct Game: View {
           .yOffset(vm.header)
         Group {
           Rectangle()
-            .fill(Color.white.opacity(0.1))
+            .fill(Color.white.opacity(0.001))
             .height(vm.h*0.4)
             .readSize($vm.tableSize)
                 .overlay {
@@ -67,7 +67,7 @@ struct Game: View {
                           VStack(spacing: 0) {
                             ForEach(1..<51) { i in
                               ZStack {
-                                Image("t\(slot.currentTile)\(vm.itemsMatrix[0][i-1])")
+                                Image(vm.itemsMatrix[0][i-1] != 10 ? "t\(slot.currentTile)\(vm.itemsMatrix[0][i-1])" : "tb\(slot.currentBonusTile)")
                                   .resizableToFit()
                                   .frame(width: vm.size.width/6, height: slotHeight)
                                   .offset(x: 4)
@@ -90,7 +90,7 @@ struct Game: View {
                           VStack(spacing: 0) {
                             ForEach(1..<51) { i in
                               ZStack {
-                                Image("t\(slot.currentTile)\(vm.itemsMatrix[1][i-1])")
+                                Image(vm.itemsMatrix[1][i-1] != 10 ? "t\(slot.currentTile)\(vm.itemsMatrix[1][i-1])" : "tb\(slot.currentBonusTile)")
                                   .resizableToFit()
                                   .frame(width: vm.size.width/6, height: slotHeight)
                                   .offset(x: 4)
@@ -113,7 +113,7 @@ struct Game: View {
                           VStack(spacing: 0) {
                             ForEach(1..<51) { i in
                               ZStack {
-                                Image("t\(slot.currentTile)\(vm.itemsMatrix[2][i-1])")
+                                Image(vm.itemsMatrix[2][i-1] != 10 ? "t\(slot.currentTile)\(vm.itemsMatrix[2][i-1])" : "tb\(slot.currentBonusTile)")
                                   .resizableToFit()
                                   .frame(width: vm.size.width/6, height: slotHeight)
                                   .offset(x: 4)
@@ -136,7 +136,7 @@ struct Game: View {
                           VStack(spacing: 0) {
                             ForEach(1..<51) { i in
                               ZStack {
-                                Image("t\(slot.currentTile)\(vm.itemsMatrix[3][i-1])")
+                                Image(vm.itemsMatrix[3][i-1] != 10 ? "t\(slot.currentTile)\(vm.itemsMatrix[3][i-1])" : "tb\(slot.currentBonusTile)")
                                   .resizableToFit()
                                   .frame(width: vm.size.width/6, height: slotHeight)
                                   .offset(x: 4)
@@ -159,7 +159,7 @@ struct Game: View {
                           VStack(spacing: 0) {
                             ForEach(1..<51) { i in
                               ZStack {
-                                Image("t\(slot.currentTile)\(vm.itemsMatrix[4][i-1])")
+                                Image(vm.itemsMatrix[4][i-1] != 10 ? "t\(slot.currentTile)\(vm.itemsMatrix[4][i-1])" : "tb\(slot.currentBonusTile)")
                                   .resizableToFit()
                                   .frame(width: vm.size.width/6, height: slotHeight)
                                   .offset(x: 4)
@@ -213,12 +213,29 @@ struct Game: View {
                   }
                 }
         }
-        
-        
+        .scrollMask(0.1, 0.9)
+        .yOffset(-vm.h*0.1)
+       
+        if iteration >= 2 {
+          VStack(spacing: 0) {
+            Text("Last Win")
+              .lootsFont(size: 12, style: .gilroyBold, color: .white)
+            
+            HStack {
+              LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0.2), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 0.9)], startPoint: .top, endPoint: .bottom)
+                .height(20)
+                .mask {
+                  Text("\(String(vm.lastWin))")
+                }
+              Image(.coins)
+                .resizableToFit(height: 14)
+            }
+          }
+          .yOffset(vm.h*0.2)
+        }
+      
         Image(.controlpanel)
           .resizableToFit()
-          .overlay(.bottom) {
-          }
           .overlay(.top) {
             Image(.balancebar)
               .resizableToFit()
@@ -226,12 +243,12 @@ struct Game: View {
                 VStack(spacing: -2) {
                   HStack {
                     ZStack {
-                      Text("\(vm.balance)")
+                      Text("\(String(vm.balance))")
                         .lootsFont(size: 18, style: .killjoy, color: .white)
                         .customStroke(color: Color(hex: "610667"), width: 1)
                         .shadow(color: Color(hex: "610667"), radius: 1, x: 0, y: 1)
                       
-                      Text("\(vm.balance)")
+                      Text("\(String(vm.balance))")
                         .lootsFont(size: 18, style: .killjoy, color: vm.isRotationWin ? .green : .red)
                         .customStroke(color: Color(hex: "610667"), width: 1)
                           .opacity(abs(sin(vm.balanceAnimCount * 3.14)))
@@ -249,79 +266,88 @@ struct Game: View {
               .yOffset(-30)
           }
           .overlay {
+          
             VStack {
-              HStack {
-                Image(.tfbetbg)
+              if vm.freespins == 0 {
+                HStack {
+                  Image(.tfbetbg)
+                    .resizableToFit(height: 42)
+                    .overlay {
+                      VStack(spacing: 0) {
+                        HStack {
+                          Text("\(vm.bet)")
+                            .lootsFont(size: 18, style: .gilroyBlack, color: .white)
+                          Image(.coins)
+                            .resizableToFit(height: 10)
+                        }
+                        
+                        Text("Bet Per Line")
+                          .lootsFont(size: 12, style: .gilroyBold, color: .white)
+                      }
+                      .onTapGesture {
+                        showPicker.toggle()
+                      }
+                    }
+                  
+                  Image(.tfbetbg)
+                    .resizableToFit(height: 42)
+                    .overlay {
+                      VStack(spacing: 0) {
+                        HStack {
+                          Text("\(vm.bet*vm.linesCount)")
+                            .lootsFont(size: 18, style: .gilroyBlack, color: .white)
+                          Image(.coins)
+                            .resizableToFit(height: 10)
+                        }
+                        
+                        Text("Total Bet")
+                          .lootsFont(size: 12, style: .gilroyBold, color: .white)
+                      }
+                    }
+                }
+                
+                Image(.linestfbg)
                   .resizableToFit(height: 42)
                   .overlay {
                     VStack(spacing: 0) {
-                      HStack {
-                        Text("\(vm.bet)")
-                          .lootsFont(size: 18, style: .gilroyBlack, color: .white)
-                        Image(.coins)
-                          .resizableToFit(height: 10)
-                      }
-                      
-                      Text("Bet Per Line")
+                      Text("\(vm.linesCount)")
+                        .lootsFont(size: 18, style: .gilroyBlack, color: .white)
+                      Text("Lines")
                         .lootsFont(size: 12, style: .gilroyBold, color: .white)
-                    }
-                    .onTapGesture {
-                      showPicker.toggle()
                     }
                   }
-                
-                Image(.tfbetbg)
-                  .resizableToFit(height: 42)
-                  .overlay {
-                    VStack(spacing: 0) {
-                      HStack {
-                        Text("\(vm.bet*vm.linesCount)")
-                          .lootsFont(size: 18, style: .gilroyBlack, color: .white)
-                        Image(.coins)
-                          .resizableToFit(height: 10)
+                  .overlay(.leading) {
+                    Button {
+                      if vm.linesCount > 1 {
+                        vm.linesCount -= 1
                       }
-                      
-                      Text("Total Bet")
-                        .lootsFont(size: 12, style: .gilroyBold, color: .white)
+                    } label: {
+                      Image(.minusbtn)
+                        .resizableToFit(height: 36)
                     }
+                    .saturation(vm.linesCount == 1 ? 0.2 : 1)
+                    .disabled(vm.linesCount == 1)
+                  }
+                  .overlay(.trailing) {
+                    Button {
+                      if vm.linesCount < 9 {
+                        vm.linesCount += 1
+                      }
+                    } label: {
+                      Image(.plusbtn)
+                        .resizableToFit(height: 36)
+                    }
+                    .saturation(vm.linesCount == 9 ? 0.2 : 1)
+                    .disabled(vm.linesCount == 9)
+                  }
+              } else {
+                LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 1)], startPoint: .top, endPoint: .bottom)
+                  .frame(height: 40)
+                  .mask {
+                    Text("FREESPINS \(vm.freespins)")
+                      .lootsFont(size: 30, style: .killjoy, color: .white)
                   }
               }
-              
-              Image(.linestfbg)
-                .resizableToFit(height: 42)
-                .overlay {
-                  VStack(spacing: 0) {
-                    Text("\(vm.linesCount)")
-                      .lootsFont(size: 18, style: .gilroyBlack, color: .white)
-                    Text("Lines")
-                      .lootsFont(size: 12, style: .gilroyBold, color: .white)
-                  }
-                }
-                .overlay(.leading) {
-                  Button {
-                    if vm.linesCount > 1 {
-                      vm.linesCount -= 1
-                    }
-                  } label: {
-                    Image(.minusbtn)
-                      .resizableToFit(height: 36)
-                  }
-                  .saturation(vm.linesCount == 1 ? 0.2 : 1)
-                  .disabled(vm.linesCount == 1)
-                }
-                .overlay(.trailing) {
-                  Button {
-                    if vm.linesCount < 9 {
-                      vm.linesCount += 1
-                    }
-                  } label: {
-                    Image(.plusbtn)
-                      .resizableToFit(height: 36)
-                  }
-                  .saturation(vm.linesCount == 9 ? 0.2 : 1)
-                  .disabled(vm.linesCount == 9)
-                }
-                
               Button {
                   if vm.isFreeSpin && vm.freespins > 0 {
                       vm.freespins -= 1
@@ -471,6 +497,13 @@ struct Game: View {
         SlotInfo(slot: slot)
           .transparentIfNot(vm.showSlotInfo)
           .animation(.easeInOut, value: vm.showSlotInfo)
+        ZStack {
+          if vm.isBonusGame {
+            BonusGame(slot: slot)
+          }
+        }
+        .transparentIfNot(vm.isBonusGame)
+        .animation(.default, value: vm.isBonusGame)
       }
       .sheet(isPresented: $showPicker) {
         ZStack {

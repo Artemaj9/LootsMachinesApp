@@ -33,7 +33,7 @@ final class GameViewModel: ObservableObject {
   @Published var freespins = 0
   
   @Published var currentPayout = 0
-  @Published var bet = 100
+  @Published var bet = 10
   @Published var itemsMatrix = Array(repeating: Array(repeating: 1, count: 50), count: 5)
   @Published var currentMatrix = Array(repeating: Array(repeating: 1, count: 3), count: 5)
   @Published var newPosition: [CGFloat] = Array(repeating: 0, count: 5)
@@ -44,13 +44,49 @@ final class GameViewModel: ObservableObject {
   @Published var isRotationWin = false
   @Published var highlightItemsMatrix = Array(repeating: Array(repeating: 0, count: 50), count: 5)
   @Published var highlightMatrix = Array(repeating: Array(repeating: 0, count: 3), count: 5)
+  @Published var lastWin = 0
   
-  private var initialProbabilities: [Double] = [10, 9, 8, 7, 6, 5, 4, 3, 2]
-  private var probabilities: [Double] = [10, 9, 8, 7, 6, 5, 4, 3, 2]
+  private var initialProbabilities: [Double] = [1, 1, 2, 3, 4, 5, 6, 7, 8, 4]
+  private var probabilities: [Double] = [1, 1, 2, 3, 4, 5, 6, 7, 8, 4]
   
   @Published var isFreeSpin = false
   @Published var freespinWin = 0
   @Published var bonusCount = 0
+  
+  // MARK: Bonus Game
+  @Published var isBonusGame = false
+  @Published var bonusGameState = 1
+  @Published var bonusWin = [0, 0, 0]
+  @Published var bonusUserSelection = 1
+  
+  func generateBonusWin(for variant: Int) {
+      switch variant {
+      case 1:
+          var wins = [0, 0, 0]
+          let winIndex = Int.random(in: 0..<3)
+          wins[winIndex] = 15
+          self.bonusWin = wins
+      case 2:
+          var rewards = [10, 5, 0].shuffled()
+          self.bonusWin = rewards
+      default:
+          self.bonusWin = [0, 0, 0]
+      }
+  }
+  
+  func handleBonusSelection() {
+      let index = bonusUserSelection - 1
+      let reward = bonusWin[safe: index] ?? 0
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+          if reward > 0 {
+              self.freespins += reward
+          }
+          self.isBonusGame = false
+          self.bonusGameState = 1
+          self.bonusUserSelection = 0
+      }
+  }
   
   var currentIndex = 0
   var timer: Timer?
@@ -58,9 +94,8 @@ final class GameViewModel: ObservableObject {
   // MARK: Lines Logic
   @Published var currentWin = 0
   @Published var linesCount = 3
-  @Published var luckyLinesDraw = Array(repeating: true, count: 9) // was false
-  @Published var luckyRectDraw = Array(repeating: true, count: 9) // was false
-  
+  @Published var luckyLinesDraw = Array(repeating: false, count: 9) // was false
+  @Published var luckyRectDraw = Array(repeating: false, count: 9) // was false
   
   // Lines shapes
   func linesLogic() {
@@ -91,6 +126,7 @@ final class GameViewModel: ObservableObject {
                   if symbol == 10 {
                     bonusCount = max(3, bonusCount)
                       print("Bыпало 3 бонуса")
+                    isBonusGame = true
                   }
               }
               
@@ -100,6 +136,7 @@ final class GameViewModel: ObservableObject {
                   if symbol == 10 {
                       bonusCount = max(4, bonusCount)
                       print("Bыпало 4 бонуса")
+                    isBonusGame = true
                   }
               }
               
@@ -110,6 +147,7 @@ final class GameViewModel: ObservableObject {
                   if symbol == 10 {
                       bonusCount = 5
                       print("Bыпало 5 бонусов!")
+                    isBonusGame = true
                   }
               }
               
@@ -121,6 +159,7 @@ final class GameViewModel: ObservableObject {
       print("Total Payout: \(totalPayout)")
       currentPayout += totalPayout
       balance += totalPayout
+      lastWin = totalPayout
       if isFreeSpin {
           freespinWin += totalPayout
       }
