@@ -17,21 +17,23 @@ final class GameViewModel: ObservableObject {
   @Published var originalImage: UIImage? = UIImage(resource: .bg1)
   @Published var previewImage: UIImage? = UIImage(resource: .bg1)
   @Published var showSlotInfo = false
+  
   // MARK: SLOT CREATION
   @Published var currentTile = 1
   @Published var currentBonusTile = 1
   @Published var currentBg = 1
   @Published var slotName = ""
   @Published var bonusVariant = 1
+  @Published var showCreatedGame = false
+  @Published var justCreated = false
   
   // MARK: - Game
   @Published var tableSize: CGSize = .zero
   @Published var isFirstSpin = true
   @Published var freespins = 0
   
-  
   @Published var currentPayout = 0
-  @Published var bet = [500, 500, 500, 500]
+  @Published var bet = 100
   @Published var itemsMatrix = Array(repeating: Array(repeating: 1, count: 50), count: 5)
   @Published var currentMatrix = Array(repeating: Array(repeating: 1, count: 3), count: 5)
   @Published var newPosition: [CGFloat] = Array(repeating: 0, count: 5)
@@ -48,8 +50,166 @@ final class GameViewModel: ObservableObject {
   
   @Published var isFreeSpin = false
   @Published var freespinWin = 0
+  @Published var bonusCount = 0
+  
+  var currentIndex = 0
+  var timer: Timer?
+  
+  // MARK: Lines Logic
+  @Published var currentWin = 0
+  @Published var linesCount = 3
+  @Published var luckyLinesDraw = Array(repeating: true, count: 9) // was false
+  @Published var luckyRectDraw = Array(repeating: true, count: 9) // was false
+  
+  
+  // Lines shapes
+  func linesLogic() {
+      bonusCount = 0
+      var totalPayout = 0
+      for line in (0..<linesCount) {
+          var shape: [Int] = []
+          var j = 0
+          for pos in lines[line] {
+              shape.append(currentMatrix[j][pos])
+              j += 1
+          }
+          
+          for symbol in Set(shape) {
+              let matchingIndices = shape.enumerated().filter { $0.element == symbol }.map { $0.offset }
+              
+              if matchingIndices.count >= 3 {
+                  for index in matchingIndices {
+                      let column = index
+                      let row = lines[line][column]
+                      highlightMatrix[column][row] = 1
+                  }
+              }
+              
+              if shape.filter({ $0 == symbol }).count == 3 {
+                  print("символ \(symbol) встретился 3 раза,  линия \(line + 1)")
+                  totalPayout +=  3 * Int(payoutTable[symbol-1][0] * bet)
+                  if symbol == 10 {
+                    bonusCount = max(3, bonusCount)
+                      print("Bыпало 3 бонуса")
+                  }
+              }
+              
+              if shape.filter({ $0 == symbol }).count == 4 {
+                  print("символ \(symbol) встретился 4 раза,  линия \(line + 1)")
+                  totalPayout +=  Int(payoutTable[symbol-1][1] * bet)
+                  if symbol == 10 {
+                      bonusCount = max(4, bonusCount)
+                      print("Bыпало 4 бонуса")
+                  }
+              }
+              
+              if shape.filter({ $0 == symbol }).count == 5 {
+                  print("символ \(symbol) встретился 5 раз, линия \(line + 1)")
+                  totalPayout +=  Int(payoutTable[symbol-1][2] * bet)
+                  
+                  if symbol == 10 {
+                      bonusCount = 5
+                      print("Bыпало 5 бонусов!")
+                  }
+              }
+              
+              if shape.filter({ $0 == symbol }).count >= 3 {
+                  luckyLinesDraw[line] = true
+              }
+          }
+      }
+      print("Total Payout: \(totalPayout)")
+      currentPayout += totalPayout
+      balance += totalPayout
+      if isFreeSpin {
+          freespinWin += totalPayout
+      }
+      print("*****HighLightMATRIX******")
+      print("\(highlightMatrix)")
+      
+      print("*****CurrentMATRIX******")
+      print("\(currentMatrix.debugDescription)")
+  }
+  
+  private let lines: [[Int]] = [
+      [2, 2, 2, 2, 2],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 1, 2, 1, 0],
+      [2, 1, 0, 1, 2],
+      [1, 0, 0, 0, 1],
+      [1, 2, 2, 2, 1],
+      [2, 2, 1, 0, 0],
+      [0, 0, 1, 2, 2]
+  ]
+  
+  func startAnimation() {
+        currentIndex = 0
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { [weak self] _ in
+            self?.updateRects()
+        }
+    }
+    
+    func updateRects() {
+        while currentIndex < luckyLinesDraw.count {
+            if luckyLinesDraw[currentIndex] {
+                luckyRectDraw[currentIndex] = true
+                currentIndex += 1
+                break
+            }
+            currentIndex += 1
+        }
 
+        if currentIndex >= luckyLinesDraw.count {
+            timer?.invalidate()
+            timer = nil
+            print("Animation complete")
+        }
+    }
+  
+  let payoutTable: [[Int]] = [
+      [100, 1000, 5000],
+      [40, 400, 2000],
+      [30, 100, 750],
+      [30, 100, 750],
+      [5, 40, 150],
+      [5, 40, 150],
+      [5, 25, 100],
+      [5, 25, 100],
+      [5, 25, 100],
+      [1, 1, 1]
+  ]
+  
+  var tileCost: Int {
+      switch currentTile {
+      case 4: return 500
+      case 5: return 3000
+      default: return 0
+      }
+  }
 
+  var bonusTileCost: Int {
+      switch currentBonusTile {
+      case 4: return 500
+      case 5: return 3000
+      default: return 0
+      }
+  }
+
+  var bgCost: Int {
+      switch currentBg {
+      case 4: return 500
+      case 5: return 3000
+      default: return 0
+      }
+  }
+  
+  var isSlotReady: Bool {
+    previewImage != nil &&
+    !slotName.isEmpty &&
+    (tileCost + bonusTileCost + bgCost) <= balance
+  }
   
   // MARK: MATRIX LOGIC
   func fillItems(isFirst: Bool) {
@@ -68,7 +228,7 @@ final class GameViewModel: ObservableObject {
       }
       for j in 0...4 {
           for i in 0...49 {
-              if isFirst || i < 46 {
+              if isFirst || i < 47 {
                   itemsMatrix[j][i] = randomNumber(probabilities: probabilities) + 1
               }
           }
@@ -144,6 +304,8 @@ final class GameViewModel: ObservableObject {
     showSlotInfo = false
     originalImage = nil
     previewImage = nil
+    justCreated = false
+    luckyLinesDraw = Array(repeating: false, count: 9)
   }
   
   // MARK: - Layout

@@ -309,12 +309,27 @@ struct CreateSlot: View {
               }
               
               Button {
-                
+                vm.balance -= vm.tileCost + vm.bonusTileCost + vm.bgCost
+                let newSlot = Slot(
+                  currentTile: vm.currentTile,
+                  currentBonusTile: vm.currentBonusTile,
+                  currentBg: vm.currentBg,
+                  bonusVariant: vm.bonusVariant,
+                  slotName: vm.slotName,
+                  image: vm.previewImage
+                )
+                vm.slots.append(newSlot)
+                vm.showCreatedGame = true
+                nm.path.append(.game(newSlot))
+                vm.justCreated = true
               } label: {
                 Image(.continuebtn)
                   .resizableToFit(height: 54)
               }
+              .saturation(vm.isSlotReady ? 1 : 0.2)
+              .disabled(!vm.isSlotReady)
             }
+          
             .vPadding()
             Color.clear.height(300)
           }

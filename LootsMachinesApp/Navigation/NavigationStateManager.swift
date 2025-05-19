@@ -4,11 +4,12 @@
 
 import SwiftUI
 
-enum SelectionState: Hashable, Codable {
+enum SelectionState: Hashable {
   case info
   case create
   case prize
   case history
+  case game(Slot)
 }
 
 class NavigationStateManager: ObservableObject {
@@ -34,6 +35,11 @@ extension View {
         if state == .history {
           History()
         }
+        
+        if case let .game(slot) = state {
+          Game(slot: slot)
+        }
+        
       }
     }
   }
