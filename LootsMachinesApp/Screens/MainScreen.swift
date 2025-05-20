@@ -11,8 +11,8 @@ struct MainScreen: View {
   var body: some View {
     ZStack {
       bg
-      header
       createSlot
+      header
       browseSlots
   
       
@@ -30,6 +30,7 @@ struct MainScreen: View {
           }
         }
         .yOffset(vm.h*0.3)
+        .yOffsetIf(vm.isSEight, -40)
       }
       
       dailyBonus
@@ -123,6 +124,7 @@ struct MainScreen: View {
     }
     .hPadding()
     .yOffset(vm.h*0.1)
+    .yOffsetIf(vm.isSEight, -20)
   }
   
   private var dailyBonus: some View {

@@ -17,10 +17,12 @@ struct BonusGame: View {
         Image(.bonusgametitle)
           .resizableToFit(height: 104)
           .yOffset(-vm.h*0.37)
+          .yOffsetIf(vm.isSEight, 36)
         
         Text("CHOOSE ONE BONUS TILE")
           .lootsFont(size: 18, style: .gilroyBlack, color: .white)
           .yOffset(-vm.h*0.25)
+          .yOffsetIf(vm.isSEight, 30)
         
         ZStack {
           RadialGradient(colors: [vm.bonusWin[0]  > 0 ? .white : .red, vm.bonusWin[0] > 0 ? .white.opacity(0) : .red.opacity(0)], center: .center, startRadius: 0, endRadius: 80)
@@ -34,7 +36,7 @@ struct BonusGame: View {
               .height(70)
               .mask {
                 Text(vm.bonusWin[0]  > 0 ? "WIN!" : "LOOSE!")
-                  .lootsFont(size: 56, style: .killjoy, color: .white)
+                  .lootsFont(size: 50, style: .killjoy, color: .white)
                   .rotationEffect(Angle(degrees: 15))
               }
            }
@@ -47,6 +49,7 @@ struct BonusGame: View {
           }
         }
           .offset(-vm.w*0.25, -vm.h*0.1)
+          .yOffsetIf(vm.isSEight, 30)
         
         ZStack {
           RadialGradient(colors: [vm.bonusWin[1]  > 0 ? .white : .red, vm.bonusWin[1] > 0 ? .white.opacity(0) : .red.opacity(0)], center: .center, startRadius: 0, endRadius: 80)
@@ -61,7 +64,7 @@ struct BonusGame: View {
               .height(70)
               .mask {
                 Text(vm.bonusWin[1]  > 0 ? "WIN!" : "LOOSE!")
-                  .lootsFont(size: 56, style: .killjoy, color: .white)
+                  .lootsFont(size: 50, style: .killjoy, color: .white)
                   .rotationEffect(Angle(degrees: 15))
               }
            }
@@ -74,6 +77,7 @@ struct BonusGame: View {
           }
         }
           .offset(vm.w*0.25, -vm.h*0.1)
+          .yOffsetIf(vm.isSEight, 30)
        
         ZStack {
           RadialGradient(colors: [vm.bonusWin[2]  > 0 ? .white : .red, vm.bonusWin[2] > 0 ? .white.opacity(0) : .red.opacity(0)], center: .center, startRadius: 0, endRadius: 80)
@@ -88,7 +92,7 @@ struct BonusGame: View {
               .height(70)
               .mask {
                 Text(vm.bonusWin[2]  > 0 ? "WIN!" : "LOOSE!")
-                  .lootsFont(size: 56, style: .killjoy, color: .white)
+                  .lootsFont(size: 50, style: .killjoy, color: .white)
                   .minimumScaleFactor(0.5)
                   .rotationEffect(Angle(degrees: 15))
               }
@@ -102,6 +106,7 @@ struct BonusGame: View {
           }
         }
         .yOffset(vm.h*0.1)
+        .yOffsetIf(vm.isSEight, 30)
 
         Image(.controlpanel)
           .resizableToFit()
@@ -140,6 +145,7 @@ struct BonusGame: View {
           }
         .hPadding()
         .yOffset(vm.h*0.43)
+        .yOffsetIf(vm.isSEight, -44)
         }
       .onAppear {
           vm.generateBonusWin(for: slot.bonusVariant)

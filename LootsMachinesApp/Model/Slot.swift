@@ -85,7 +85,6 @@ struct Slot: Codable, Hashable {
 }
 
 
-
 func getSlotsFileURL() -> URL {
     let fileManager = FileManager.default
     let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]

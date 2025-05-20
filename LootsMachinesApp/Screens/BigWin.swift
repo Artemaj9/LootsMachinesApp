@@ -55,6 +55,7 @@ struct BigWin: View {
       Image(.goldzal)
         .resizableToFit()
         .yOffset(vm.h*0.4)
+        .yOffsetIf(vm.isSEight, -20)
     }
     .onTapGesture {
       withAnimation {

@@ -34,8 +34,10 @@ struct Game: View {
             Button {
               if vm.justCreated {
                 nm.path = []
+                vm.resetvm()
               } else {
                 nm.path.removeLast()
+                vm.resetvm()
               }
             } label: {
               Image(.infxbtn)
@@ -78,8 +80,8 @@ struct Game: View {
                           .offset(y: vm.newPosition[0])
                           .offset(y: -slotHeight * 47 + 30)
                           .offset(y: vm.size.width > 400 ? 6 : 0)
-                          .offset(x: vm.size.height > 910 ? 4 : 0)
-                          .offset(x: vm.size.height > 910 ? 4 : 0)
+//                          .offset(x: vm.size.height > 910 ? 4 : 0)
+//                          .offset(x: vm.size.height > 910 ? 4 : 0)
                         }
                         .allowsHitTesting(false)
                         
@@ -101,8 +103,8 @@ struct Game: View {
                           .offset(y: vm.newPosition[1])
                           .offset(y: -slotHeight * 47 + 30)
                           .offset(y: vm.size.width > 400 ? 6 : 0)
-                          .offset(x: vm.size.height > 910 ? 4 : 0)
-                          .offset(x: vm.size.height > 910 ? 4 : 0)
+//                          .offset(x: vm.size.height > 910 ? 4 : 0)
+//                          .offset(x: vm.size.height > 910 ? 4 : 0)
                         }
                         .allowsHitTesting(false)
                         
@@ -124,8 +126,8 @@ struct Game: View {
                           .offset(y: vm.newPosition[2])
                           .offset(y: -slotHeight * 47 + 30)
                           .offset(y: vm.size.width > 400 ? 6 : 0)
-                          .offset(x: vm.size.height > 910  ? 4 : 0)
-                          .offset(x: vm.size.height > 910  ? 4 : 0)
+//                          .offset(x: vm.size.height > 910  ? 4 : 0)
+//                          .offset(x: vm.size.height > 910  ? 4 : 0)
                         }
                         .allowsHitTesting(false)
                         
@@ -147,8 +149,8 @@ struct Game: View {
                           .offset(y: vm.newPosition[3])
                           .offset(y: -slotHeight * 47 + 30)
                           .offset(y: vm.size.width > 400 ? 6 : 0)
-                          .offset(x: vm.size.height > 910 ? 4 : 0)
-                          .offset(x: vm.size.height > 910  ? 4 : 0)
+//                          .offset(x: vm.size.height > 910 ? 4 : 0)
+//                          .offset(x: vm.size.height > 910  ? 4 : 0)
                         }
                         .allowsHitTesting(false)
                         
@@ -213,9 +215,12 @@ struct Game: View {
                       .frame(width: vm.size.width, height: vm.tableSize.height, alignment: .leading)
                       .animation(.easeInOut(duration: 1), value: showlines)
                   }
+                  .offset(y: vm.h > 910 ? -18 : 0)
+                  .offset(y: vm.isSEight ? 16 : 0)
                 }
         }
         .yOffset(-vm.h*0.1)
+        .yOffsetIf(vm.isSEight, -16)
        
         if iteration >= 2 {
           VStack(spacing: 0) {
@@ -235,6 +240,7 @@ struct Game: View {
             }
           }
           .yOffset(vm.h*0.15)
+          .yOffsetIf(vm.isSEight, -36)
         }
       
         Image(.controlpanel)
@@ -288,7 +294,9 @@ struct Game: View {
                           .lootsFont(size: 12, style: .gilroyBold, color: .white)
                       }
                       .onTapGesture {
-                        showPicker.toggle()
+                        if enabledSpin {
+                          showPicker.toggle()
+                        }
                       }
                     }
                   
@@ -328,8 +336,9 @@ struct Game: View {
                       Image(.minusbtn)
                         .resizableToFit(height: 36)
                     }
-                    .saturation(vm.linesCount == 1 ? 0.2 : 1)
+                    .saturation(vm.linesCount == 1 || !enabledSpin ? 0.2 : 1)
                     .disabled(vm.linesCount == 1)
+                    .disabled(!enabledSpin)
                   }
                   .overlay(.trailing) {
                     Button {
@@ -340,8 +349,9 @@ struct Game: View {
                       Image(.plusbtn)
                         .resizableToFit(height: 36)
                     }
-                    .saturation(vm.linesCount == 9 ? 0.2 : 1)
+                    .saturation(vm.linesCount == 9 || !enabledSpin ? 0.2 : 1)
                     .disabled(vm.linesCount == 9)
+                    .disabled(!enabledSpin)
                   }
               } else {
                 LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 1)], startPoint: .top, endPoint: .bottom)
@@ -374,7 +384,7 @@ struct Game: View {
                       vm.balanceAnimCount = 0
                       vm.isRotationWin = false
                     
-                if !vm.freespins >= 1 {
+                if vm.freespins == 0 {
                       vm.startBalanceAnimation()
                       vm.balance -= Int(vm.bet)*vm.linesCount
                   }
@@ -473,6 +483,7 @@ struct Game: View {
           }
           .hPadding()
           .yOffset(vm.h*0.38)
+          .yOffsetIf(vm.isSEight, -60)
 
         SlotInfo(slot: slot)
           .transparentIfNot(vm.showSlotInfo)

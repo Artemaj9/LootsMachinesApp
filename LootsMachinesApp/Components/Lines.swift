@@ -12,6 +12,7 @@ struct Lines: View {
                 .resizableToFit()
                 .padding()
                 .offset(y: -vm.tableSize.height*0.27)
+                .yOffsetIf(vm.isSEight, -4)
                 .opacity(vm.luckyLinesDraw[0] ? 1 : 0)
                 .mask {
                 Rectangle()
@@ -21,6 +22,7 @@ struct Lines: View {
                     .frame(width: vm.size.width, height: vm.tableSize.height, alignment: .leading)
                     .animation(.easeInOut(duration: 1), value: vm.luckyRectDraw[0])
                 }
+
             Image(.l2)
                 .resizableToFit()
                 .padding()

@@ -60,13 +60,14 @@ struct SlotInfo: View {
   private var bonusgame: some View {
     HStack {
       Image("btitle\(slot.currentBonusTile)")
-        .resizableToFit(height: 124)
+        .resizableToFit(height: vm.isSEight ? 100 : 124)
       
       Image(.bonusgame)
-        .resizableToFit(height: 180)
+        .resizableToFit(height: vm.isSEight ? 160 : 180)
     }
     .hPadding()
     .yOffset(vm.h*0.4)
+    .yOffsetIf(vm.isSEight, -30)
   }
 }
 

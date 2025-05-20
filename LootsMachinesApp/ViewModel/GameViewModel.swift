@@ -9,8 +9,7 @@ import func AVFoundation.AVMakeRect
 final class GameViewModel: ObservableObject {
   @Published var size: CGSize = CGSize(width: 393, height: 851)
   @Published var isSplash = true
-  
-  @Published var balance = 600
+  @AppStorage("balance") var balance = 10000
   @Published var slots: [Slot] = [
     Slot(
       currentTile: 1,
@@ -86,7 +85,7 @@ final class GameViewModel: ObservableObject {
   @Published var dailyBonus = 1000
   @Published var timeCount = 0
   @Published var timeRemaining = ""
-  @Published var isBonusReady = true
+  @AppStorage("isBonusReady") var isBonusReady = true
   var countdownTime: TimeInterval = 24 * 3600
   var cancellable: AnyCancellable?
   @Published var slotToDel = Slot()
@@ -133,17 +132,21 @@ final class GameViewModel: ObservableObject {
               timeRemaining = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
           }
       }
-
+  
   func collectBonus() {
-      UserDefaults.standard.set(Date(), forKey: "lastBonusTime")
+      let now = Date()
+      let nextBonusTime = now.addingTimeInterval(24 * 3600) // 24 hours from now
+
+      UserDefaults.standard.set(now, forKey: "lastBonusTime")
+      UserDefaults.standard.set(nextBonusTime, forKey: "countdownEndTime")
+
       balance += dailyBonus
       isBonusReady = false
-      cancellable?.cancel()
-      UserDefaults.standard.set(
-          Date().addingTimeInterval(countdownTime),
-          forKey: "countdownEndTime"
-      )
       timeRemaining = "24:00:00"
+
+      // Cancel and restart the timer
+      cancellable?.cancel()
+      countdownTime = 24 * 3600
       startBonusTimer()
   }
   
@@ -172,11 +175,11 @@ final class GameViewModel: ObservableObject {
   func handleBonusSelection() {
       let index = bonusUserSelection - 1
       let reward = bonusWin[safe: index] ?? 0
-      
+    if reward > 0 {
+        self.freespins += reward
+    }
+    
       DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-          if reward > 0 {
-              self.freespins += reward
-          }
           self.isBonusGame = false
           self.bonusGameState = 1
           self.bonusUserSelection = 0
@@ -432,14 +435,18 @@ final class GameViewModel: ObservableObject {
       .assign(to: &$previewImage)
     
     startBonusTimer()
-   // slots = loadSlotsFromFile() ?? []
+  //  slots = loadSlotsFromFile() ?? []
   }
-    // events = loadEventsFromFile() ?? []
-  
+  // MARK: Debug
+  func showAllLines() {
+      luckyLinesDraw = Array(repeating: true, count: 9)
+      luckyRectDraw = Array(repeating: true, count: 9)
+  }
   func resetvm() {
     currentTile = 1
     currentBonusTile = 1
     currentBg = 1
+    slotName = ""
     showSlotInfo = false
     originalImage = nil
     previewImage = nil
@@ -447,6 +454,8 @@ final class GameViewModel: ObservableObject {
     showBigWin = false
     luckyLinesDraw = Array(repeating: false, count: 9)
     freespins = 0
+    bet = 10
+    linesCount = 3
   }
   
   // MARK: - Layout

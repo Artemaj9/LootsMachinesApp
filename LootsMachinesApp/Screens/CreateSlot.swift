@@ -3,6 +3,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct CreateSlot: View {
   @EnvironmentObject var nm: NavigationStateManager
@@ -13,11 +14,15 @@ struct CreateSlot: View {
   @State private var isPickerPresented = false
   @State private var showActionSheet = false
   @FocusState private var isFocused: Bool
+  @State private var keyboardHeight: CGFloat = 0
   
     var body: some View {
       ZStack {
         Image(.bg)
           .backgroundFill()
+          .onTapGesture {
+            UIApplication.shared.endEditing()
+          }
         
         ScrollView {
           VStack(spacing: 30) {
@@ -352,14 +357,18 @@ struct CreateSlot: View {
                 }
             }
           }
+          .opacity(keyboardHeight > 0 ? 0.001 : 1)
           .overlay {
             Button {
               showActionSheet = true
             } label: {
               Image(.uploadbtn)
                 .resizableToFit(height: 120)
+                .opacity(vm.previewImage != nil ? 0.001 : 1)
             }
+            .scaleEffect(vm.isSEight ? 0.8 : 1)
             .yOffset(20)
+            
           }
           .overlay(.bottom) {
             Image(.slotnametfbg)
@@ -401,19 +410,25 @@ struct CreateSlot: View {
                     
                       TextField("", text: $vm.slotName)
                           .lootsFont(size: 21, style: .killjoy, color: .white)
+                          .autocorrectionDisabled()
                           .multilineTextAlignment(.center)
                           .lineLimit(1)
                           .opacity(0.1)
                           .focused($isFocused)
                           .width(vm.w*0.7)
+                          .height(30)
                   }
                 }
               }
               .yOffset(vm.h*0.03)
+              .yOffset(keyboardHeight > 0 ? 20 : 0)
+              .animation(.easeIn, value: keyboardHeight)
             
           }
           .yOffset(-vm.h*0.4)
+          .yOffsetIf(vm.isSEight, 30)
       }
+      .onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
       .navigationBarBackButtonHidden()
       .onAppear {
         startAnimation = true
@@ -471,8 +486,9 @@ struct CreateSlot: View {
           }
         }
         .offset(y: 20)
+        .offset(y: vm.isSEight ? -24 : 0)
         .vPadding()
-        .presentationDetents([.fraction(1/3)])
+        .presentationDetents([.fraction(vm.isSEight ? 0.4 : 1/3)])
         .padding()
         .background(BackgroundClearView(color: Color(hex: "808080").opacity(0.1)))
         .background(.ultraThinMaterial)

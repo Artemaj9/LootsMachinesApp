@@ -16,15 +16,19 @@ struct SlotCell: View {
         .overlay(.top) {
           RoundedRectangle(cornerRadius: 24)
             .fill(.white)
+            .width(130)
+            .height(80)
             .overlay {
               Image(uiImage: slot.image ?? UIImage(resource: .bg2))
                 .resizableToFill()
+                .allowsHitTesting(false)
                 .mask {
                   RoundedRectangle(cornerRadius: 24)
                     .fill(.white)
                     .height(80)
+                    .width(130)
                 }
-              
+                .clipped()
             }
             .hPadding(12)
             .height(80)

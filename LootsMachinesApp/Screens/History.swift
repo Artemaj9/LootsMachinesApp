@@ -12,36 +12,35 @@ struct History: View {
     ZStack {
       bg
       title
-      xbtn
       
       if vm.slots.isEmpty {
         Text("NO SLOTS YET")
           .lootsFont(size: 27, style: .killjoy, color: .white)
       } else {
         ScrollView {
-          VStack(alignment: .leading, spacing: 16) {
+          VStack(alignment: .leading, spacing: 32) {
             Color.clear.height(50)
             ForEach(vm.slots.chunked(into: 2), id: \.self) { row in
-              HStack(spacing: 16) {
-                ForEach(row, id: \.self) { slot in
-                  SlotCell(slot: slot)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: 20) {
+                ForEach(row.indices, id: \.self) { idx in
+                    if let lastSlot = row[safe: idx] {
+                      SlotCell(slot: lastSlot)
+                    }
+                  }
                 }
-                
-                if row.count == 1 {
-                  Spacer()
-                }
-              }
+              .frame(maxWidth: .infinity)
+              .hPadding(20)
             }
             Color.clear.height(250)
           }
           .padding()
         }
         .scrollMask(0.1, 0.9)
-        .yOffset(vm.h*0.15)
-        
+        .yOffset(vm.h*0.12)
+        .yOffsetIf(vm.isSEight, 30)
       }
       
+      xbtn
       ZStack {
         if vm.showDelete {
           Delete()
