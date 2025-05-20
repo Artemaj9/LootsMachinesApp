@@ -44,9 +44,6 @@ struct DailyBonus: View {
               LinearGradient(stops: [.init(color: Color(hex: "FFF866"), location: 0.2), .init(color: Color(hex: "FFB515"), location: 0.52), .init(color: Color(hex: "FFEB05"), location: 0.9)], startPoint: .top, endPoint: .bottom)
             }
         }
-//      Image(.bonus)
-//        .resizableToFit()
-//        .hPadding()
       
       Button {
         vm.showBonus = false

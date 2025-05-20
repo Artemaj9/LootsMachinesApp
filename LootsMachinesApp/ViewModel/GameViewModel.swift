@@ -10,37 +10,11 @@ final class GameViewModel: ObservableObject {
   @Published var size: CGSize = CGSize(width: 393, height: 851)
   @Published var isSplash = true
   @AppStorage("balance") var balance = 10000
-  @Published var slots: [Slot] = [
-    Slot(
-      currentTile: 1,
-      currentBonusTile: 2,
-      currentBg: 3,
-      bonusVariant: 1,
-      slotName: "klklkk",
-      image: UIImage(resource: .bg2)
-    ),
-    Slot(
-      currentTile: 1,
-      currentBonusTile: 2,
-      currentBg: 3,
-      bonusVariant: 2,
-      slotName: "klkldddkk",
-      image: UIImage(resource: .bg3)
-    ),
-    
-    Slot(
-      currentTile: 1,
-      currentBonusTile: 2,
-      currentBg: 4,
-      bonusVariant: 2,
-      slotName: "klkldddkk",
-      image: UIImage(resource: .bg4)
-    )
-  ]
+  @Published var slots: [Slot] = []
   @Published var showBonus = false
   
-  @Published var originalImage: UIImage? = nil
-  @Published var previewImage: UIImage? = nil
+  @Published var originalImage: UIImage?
+  @Published var previewImage: UIImage?
   @Published var showSlotInfo = false
   @Published var showDelete = false
   
@@ -135,7 +109,7 @@ final class GameViewModel: ObservableObject {
   
   func collectBonus() {
       let now = Date()
-      let nextBonusTime = now.addingTimeInterval(24 * 3600) // 24 hours from now
+      let nextBonusTime = now.addingTimeInterval(24 * 3600)
 
       UserDefaults.standard.set(now, forKey: "lastBonusTime")
       UserDefaults.standard.set(nextBonusTime, forKey: "countdownEndTime")
@@ -165,7 +139,7 @@ final class GameViewModel: ObservableObject {
           wins[winIndex] = 15
           self.bonusWin = wins
       case 2:
-          var rewards = [10, 5, 0].shuffled()
+        let rewards = [10, 5, 0].shuffled()
           self.bonusWin = rewards
       default:
           self.bonusWin = [0, 0, 0]
@@ -192,8 +166,8 @@ final class GameViewModel: ObservableObject {
   // MARK: Lines Logic
   @Published var currentWin = 0
   @Published var linesCount = 3
-  @Published var luckyLinesDraw = Array(repeating: false, count: 9) // was false
-  @Published var luckyRectDraw = Array(repeating: false, count: 9) // was false
+  @Published var luckyLinesDraw = Array(repeating: false, count: 9)
+  @Published var luckyRectDraw = Array(repeating: false, count: 9)
   
   // Lines shapes
   func linesLogic() {
@@ -435,7 +409,7 @@ final class GameViewModel: ObservableObject {
       .assign(to: &$previewImage)
     
     startBonusTimer()
-  //  slots = loadSlotsFromFile() ?? []
+    slots = loadSlotsFromFile() ?? []
   }
   // MARK: Debug
   func showAllLines() {

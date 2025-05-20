@@ -20,16 +20,24 @@ struct History: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 32) {
             Color.clear.height(50)
-            ForEach(vm.slots.chunked(into: 2), id: \.self) { row in
+            let rows = vm.slots.chunked(into: 2)
+            ForEach(rows.indices, id: \.self) { rowIndex in
                 HStack(spacing: 20) {
-                ForEach(row.indices, id: \.self) { idx in
-                    if let lastSlot = row[safe: idx] {
-                      SlotCell(slot: lastSlot)
+                    let row = rows[rowIndex]
+
+                    if row.count == 1 {
+                        SlotCell(slot: row[0])
+                        Spacer() 
+                    } else {
+                        ForEach(row.indices, id: \.self) { idx in
+                            if let slot = row[safe: idx] {
+                                SlotCell(slot: slot)
+                            }
+                        }
                     }
-                  }
                 }
-              .frame(maxWidth: .infinity)
-              .hPadding(20)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
             }
             Color.clear.height(250)
           }

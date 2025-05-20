@@ -24,7 +24,6 @@ struct Delete: View {
               }
               
               Button {
-                // delete
                 if let index = vm.slots.firstIndex(where: {$0 == vm.slotToDel}) {
                   vm.slots.remove(at: index)
                   saveSlotsToFile(slots: vm.slots)

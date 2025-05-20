@@ -115,7 +115,7 @@ struct CreateSlot: View {
                 .fill(LinearGradient(colors: [Color(hex: "#340ACE"), Color(hex: "#1A0568")], startPoint: .top, endPoint: .bottom))
                 .height(182)
               
-              LinearGradient(gradient: .init(colors: [Color(hex: "37CAFF"), Color(hex: "FF37F5")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1 , y: 0))
+              LinearGradient(gradient: .init(colors: [Color(hex: "37CAFF"), Color(hex: "FF37F5")]), startPoint: UnitPoint(x: 0, y: 0), endPoint: UnitPoint(x: 1, y: 0))
                 .mask {
                   RoundedRectangle(cornerRadius: 32)
                     .stroke(lineWidth: 2)

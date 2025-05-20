@@ -81,7 +81,6 @@ struct Lines: View {
             Image(.l6)
                 .resizableToFit()
                 .padding(.horizontal)
-              //  .scaleEffect(x: 0.9, y: 0.87, anchor: .center)
                 .offset(y: 0.17 * vm.tableSize.height)
                 .opacity(vm.luckyLinesDraw[5] ? 1 : 0)
                 .mask {

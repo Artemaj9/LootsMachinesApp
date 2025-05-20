@@ -80,8 +80,6 @@ struct Game: View {
                           .offset(y: vm.newPosition[0])
                           .offset(y: -slotHeight * 47 + 30)
                           .offset(y: vm.size.width > 400 ? 6 : 0)
-//                          .offset(x: vm.size.height > 910 ? 4 : 0)
-//                          .offset(x: vm.size.height > 910 ? 4 : 0)
                         }
                         .allowsHitTesting(false)
                         
@@ -103,8 +101,6 @@ struct Game: View {
                           .offset(y: vm.newPosition[1])
                           .offset(y: -slotHeight * 47 + 30)
                           .offset(y: vm.size.width > 400 ? 6 : 0)
-//                          .offset(x: vm.size.height > 910 ? 4 : 0)
-//                          .offset(x: vm.size.height > 910 ? 4 : 0)
                         }
                         .allowsHitTesting(false)
                         
@@ -126,8 +122,6 @@ struct Game: View {
                           .offset(y: vm.newPosition[2])
                           .offset(y: -slotHeight * 47 + 30)
                           .offset(y: vm.size.width > 400 ? 6 : 0)
-//                          .offset(x: vm.size.height > 910  ? 4 : 0)
-//                          .offset(x: vm.size.height > 910  ? 4 : 0)
                         }
                         .allowsHitTesting(false)
                         
@@ -171,25 +165,13 @@ struct Game: View {
                           }
                           .offset(y: vm.newPosition[4])
                           .offset(y: -slotHeight * 47 + 30)
-//                          .offset(y: vm.size.width > 400 ? 6 : 0)
-//                          .offset(x: vm.size.height > 910 ? 4 : 0)
-//                          .offset(x: vm.size.height > 910  ? 4 : 0)
                         }
                        .allowsHitTesting(false)
                       }
-//                        .offset(y: vm.size.width < 380 ? -16 : 0)
-//                        .offset(y: vm.size.width < 380 ? -16 : 0)
-//                        .scaleEffect(vm.size.height > 910 ? 1.03 : 1)
-//                        .scaleEffect(vm.size.height > 910  ? 1.07 : 1)
-//                        .scaleEffect(vm.size.height > 910 ? 1.07 : 1)
-//                        .scaleEffect(vm.size.height > 910 ? 1.08 : 1)
-//                        .offset(y: vm.size.height > 910 ? 16 : 0)
-//                        .offset(y: vm.size.height > 910 ? 16 : 0)
-//                        .offset(y: vm.size.height > 910  ? 12 : 0)
                     }
                     .mask {
                       Rectangle()
-                        .fill(LinearGradient(stops: [.init(color: .white.opacity(0), location: 0.02), .init(color: .white.opacity(1), location: 0.1), .init(color: .white.opacity(1), location: 0.9), .init(color: .white.opacity(0), location: 0.95), ], startPoint: .top, endPoint: .bottom))
+                        .fill(LinearGradient(stops: [.init(color: .white.opacity(0), location: 0.02), .init(color: .white.opacity(1), location: 0.1), .init(color: .white.opacity(1), location: 0.9), .init(color: .white.opacity(0), location: 0.95)], startPoint: .top, endPoint: .bottom))
                         .height(vm.h*0.4)
                             .scaleEffect(x: vm.size.height > 910 ?  1.07 : 1)
                             .scaleEffect(x: vm.size.height > 910  ?  1.07 : 1)
@@ -216,7 +198,7 @@ struct Game: View {
                       .animation(.easeInOut(duration: 1), value: showlines)
                   }
                   .offset(y: vm.h > 910 ? -18 : 0)
-                  .offset(y: vm.isSEight ? 16 : 0)
+                  .offset(y: vm.isSE ? 16 : 0)
                 }
         }
         .yOffset(-vm.h*0.1)
@@ -407,15 +389,12 @@ struct Game: View {
                                               
                               vm.linesLogic()
                               
-                              
                               if vm.currentPayout != 0 {
                                   vm.isRotationWin = true
                                   vm.balanceAnimCount = 0
                                   vm.startBalanceAnimation()
                               }
                           }
-                       //   vm.plusActiveCheck()
-                       //   vm.linesPlusActiveCheck()
                       
                           if vm.balance <= 10 {
                             vm.isBonusReady = true

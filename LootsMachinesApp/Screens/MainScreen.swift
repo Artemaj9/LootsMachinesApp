@@ -14,8 +14,7 @@ struct MainScreen: View {
       createSlot
       header
       browseSlots
-  
-      
+        
       if vm.slots.isEmpty {
         Text("NO SLOTS YET")
           .lootsFont(size: 27, style: .killjoy, color: .white)
